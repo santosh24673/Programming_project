@@ -1,0 +1,220 @@
+---
+title: "Group_ANSS_Project"
+author: "Santosh, Naresh, Sethu, Amanda"
+date: "2023-01-29"
+output: html_document
+---
+#Introduction
+
+#The "Car Sales" dataset provides a valuable opportunity to examine the car market in a specific region. The data includes information on multiple car sales, including details about the car's brand, model, and specifications, as well as its price, fuel efficiency, and popularity. By analysing this data, it is possible to gain insight into the trends and factors that influence car sales in the region.
+#Car sales are a crucial component of the automotive industry, and a key indicator of the overall health of the economy. The data in the "Car Sales" dataset provides a snapshot of the car market in the specified region, allowing us to understand the sales patterns, popular brands and models, and the impact of several factors on car sales.
+#One important aspect of the data is the information on the engine specifications of the cars, including the fuel type, horsepower, and number of cylinders. This information can be used to analyse the relationship between engine specifications and car sales , and determine if certain engine types are more popular than others in the region.
+#Another important aspect of the data is the information on the transmission type and driven wheels, which can impact a car's fuel efficiency and performance. By examining this data, it is possible to investigate the relationship between these factors and car sales , and understand how fuel efficiency and performance impact consumer purchasing decisions.
+#In addition, the data includes information on the car's popularity, which can be used to identify the most popular car brands and models in the region. This information can be valuable for car manufacturers and dealers looking to understand consumer preferences and target their marketing efforts effectively.
+#Finally, the data includes the manufacturer's suggested retail price (MSRP) for each car, which can be used to analyse pricing trends in the car market. This information can provide valuable insights into the factors that influence car prices and determine the most competitive pricing strategies for different car models.
+#In conclusion, By analysing the data, it is possible to gain insights into the trends, popular brands and models, and the impact of various factors on car sales. These insights can be used by car manufacturers, dealers, and market researchers to make informed decisions and drive growth in the automotive industry.
+
+#Presentation of data 
+
+#The "Car Sales" dataset is a collection of data that contains information about car sales from various manufacturers and models. It includes information such as the make and model of the car, the year it was manufactured, its engine size, fuel efficiency, and the number of units sold in thousands.The data in this dataset is structured in a tabular format, with each row representing a single car and its corresponding sales information. The columns in the data include:
+#Manfacturer: The manufacturer of the car
+#Model: The model of the car
+#Year: The year the car was manufactured
+#Engine_Size: The size of the engine, measured in liters
+#Horsepower: The horsepower of the engine
+#Fuel Efficiency: The fuel efficiency of the car
+#Weight: The weight of the car, measured in pounds
+#Wheelbase: The distance between the center of the front and rear wheels, measured in inches
+#Length: The length of the car, measured in inches
+#Width: The width of the car, measured in inches
+#Sales_in_thousands: The number of units sold, measured in thousands
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(ggplot2)
+library(readr)
+library(readxl)
+```
+
+
+```{r view table, echo=TRUE, error=TRUE}
+Car_sales <- read_csv("Car_sales.csv")
+```
+
+## rounded that car prices
+
+```{r cars, echo=TRUE, error=TRUE}
+cars_rounded_prices <- Car_sales %>%   
+  mutate(Round_Price = round(Price_in_thousands))
+view(cars_rounded_prices)
+```
+
+##What is the trend of car sales over time in the given dataset?
+#The research question "What is the trend of car sales over time in the given dataset?" aims to examine the changes in car sales in the specified region over a certain period of time. The focus is to understand if car sales have increased or decreased over time, and to identify any patterns or trends that have emerged in the market.
+#This research question is important because it provides insights into the overall health of the car market in the specified region, and can help car manufacturers, dealers, and market researchers understand the dynamics of the market and make informed decisions. Additionally, the trend of car sales over time can be used to identify key drivers of sales, such as economic conditions, consumer preferences, and government regulations, among others.
+
+
+```{r ggplot a,error=TRUE,echo=TRUE}
+ggplot(data = Car_sales, 
+       aes(x = year_resale_value, y = Sales_in_thousands, col=T))+ geom_line() + geom_point()
+```
+#The resulting plot visually represents the relationship between the year of a car's resale value and its sales. The x-axis represents the year of a car's resale value, while the y-axis represents the sales of the car in thousands. The aesthetic mapping (aes) is used to specify the variables to be plotted on the x and y axes On the scale of the year-resale-value from 0 to 20 the sales of cars was hight and went down from 40 to 60 and  after 60 it was stable.
+
+
+##What are the top-selling car brands? \# Group the data by manufacturer and sum the sales in thousands
+#The research question "What are the top-selling car brands?" aims to identify the car brands that have the highest sales in the specified region. This research question is important because it provides insights into consumer preferences and demand for different car brands, which can be used by car manufacturers and dealers to make informed decisions and drive growth in the market.
+#The goal of this research question is to provide a comprehensive understanding of the top-selling car brands in the specified region, and to provide valuable information to car manufacturers and dealers.
+
+```{r grouped, echo=TRUE, error=TRUE}
+grouped_data <- Car_sales %>%
+  group_by(Manufacturer) %>%
+  summarise(Total_sales = sum(Sales_in_thousands))
+```
+
+# Sort the data in descending order
+
+```{r sorted, echo=TRUE, error=TRUE}
+sorted_data <- arrange(grouped_data, desc(Total_sales))
+```
+
+# Select the top 5 selling brands
+
+```{r topfive, echo=TRUE, error=TRUE}
+top_5_brands <- head(sorted_data, 5)
+```
+
+##What factors contribute to the highest car sales in the dataset?
+#The research question "What factors contribute to the highest car sales in the dataset?" aims to identify the factors that are associated with the highest car sales in the specified region. This research question is important because it provides insights into the drivers of car sales, which can be used by car manufacturers, dealers, and market researchers to make informed decisions and drive growth in the market. 
+#The goal of this research question is to provide a comprehensive understanding of the factors that contribute to the highest car sales in the specified region, and to provide valuable information to car manufacturers, dealers, and market researchers.
+
+```{r totalsales,error=TRUE, echo=TRUE}
+total_sales <- Car_sales %>%   
+  group_by(Model, Engine_size, Price_in_thousands) %>%    
+  summarize(Total_Sales_in_thousands = sum(Sales_in_thousands))
+```
+
+# Find the maximum total sales
+
+```{r maxsales,error=TRUE, echo=TRUE}
+max_sales <- max(total_sales$Total_Sales_in_thousands)
+```
+
+# Select the rows with the maximum total sales
+
+```{r topsalese,error=TRUE, echo=TRUE}
+top_sales <- total_sales %>%    
+  filter(Total_Sales_in_thousands == max_sales)
+```
+
+##How does the average price of cars vary based on brand, model, and year?
+#The research question "How does the average price of cars vary based on brand, model, and year?" aims to explore the relationships between the average price of cars and key variables such as brand, model, and year. This research question is important because it provides insights into the factors that influence car prices, which can be used by car manufacturers, dealers, and market researchers to make informed decisions and understand consumer preferences and demand.The goal of this research question is to provide a comprehensive understanding of how the average price of cars varies based on brand, model, and year, and to provide valuable information to car manufacturers, dealers, and market researchers.
+
+# Group the data by brand, manufacturer, and horsepower
+
+```{r groupedData,error=TRUE, echo=TRUE}
+grouped_data <- Car_sales %>%   
+  group_by(Model, Manufacturer, Horsepower) %>%   
+  summarize(avg_price = mean(Price_in_thousands))
+```
+
+# Plot the result
+
+```{r ggplotb,error=TRUE, echo=TRUE}
+ggplot(grouped_data, aes(x = Horsepower, y = avg_price, color = Model)) +  
+  geom_point() +   
+  facet_wrap(~ Manufacturer) +   
+  labs(x = "Horsepower", y = "Average Price")
+```
+#grouped all the data of car models and sorted it according to the brand and horsepower.
+
+##Is there a correlation between Engine size and the fuel efficiency
+
+#The research question "Is there a correlation between engine size and fuel efficiency?" aims to explore the relationship between two key car specifications - engine size and fuel efficiency. This research question is important because it provides insights into the trade-off between power and efficiency in car design, which can be used by car manufacturers, dealers, and market researchers to make informed decisions and understand consumer preferences and demand.The goal of this research question is to determine if there is a correlation between engine size and fuel efficiency, and to provide valuable information to car manufacturers, dealers, and market researchers. Understanding the relationship between these two variables can help car manufacturers make informed decisions about car design and can help market researchers understand consumer preferences and demand.
+
+```{r ggplotc,error=TRUE, echo=TRUE}
+ggplot(Car_sales, aes(x = Engine_size, y = Fuel_efficiency)) + 
+  geom_point() +   
+  labs(x = "Engine_size", y = "Fuel_efficiency") 
+```
+The resulting plot visually represents the relationship between the Fuel Efficiency and the Engine Size. We can observe that the engine that has the lowest fuel efficiency is the engine with size 8. And the engines size that has the highest fuel frequency is the engine size with size 1. We can also observe that the more the engine size increase the more the fuel efficiency decrease. 
+
+
+# Calculate the correlation between engine size and fuel efficiency
+
+```{r correlation,error=TRUE, echo=TRUE}
+correlation <- cor(Car_sales$Engine_size, Car_sales$Fuel_efficiency)
+```
+
+##What is the distribution of car prices in the dataset?
+
+#The research question "What is the distribution of car prices in the dataset?" aims to explore the range and frequency of car prices in the "Car Sales" dataset. This research question is important because it provides insights into the market for cars and the prices that consumers are willing to pay.The goal of this research question is to understand the distribution of car prices in the "Car Sales" dataset, and to provide valuable information to car manufacturers, dealers, and market researchers. Understanding the distribution of car prices can help car manufacturers make informed decisions about pricing and can help market researchers understand consumer preferences and demand.
+
+
+```{r summary,error=TRUE, echo=TRUE}
+summary(Car_sales$Price_in_thousands) 
+```
+
+# create a histogram of car prices
+
+```{r hist,error=TRUE, echo=TRUE}
+hist(Car_sales$Price_in_thousands,col=1:2) 
+```
+#This graph depicts about the car sales prices in thousands and the frequency of car sales . The car prices from 0 to 10 the frequency is 55 and if its  20  to 30 thousand the frequency is on peak (60) and the range from 30 to 40, the frequency is 20. Moreover, the car prices  increase from 40 to 50 the frequency will fall down to 15 and it continue to fall when the prices are increases.  
+
+
+# plot the density curve
+
+```{r density,error=TRUE, echo=TRUE}
+density(Car_sales$Price_in_thousands)
+```
+
+## which car models have the highest and lowest sales?
+
+#The research question "Which car models have the highest and lowest sales?" aims to explore the sales performance of individual car models in the "Car Sales" dataset. This research question is important because it provides insights into which car models are most popular and in demand among consumers.The goal of this research question is to identify which car models have the highest and lowest sales, and to provide valuable information to car manufacturers, dealers, and market researchers. Understanding the sales performance of individual car models can help car manufacturers make informed decisions about production and can help market researchers understand consumer preferences and demand.
+
+
+# Group the data by car model and calculate the total sales for each model
+
+```{r model,error=TRUE, echo=TRUE}
+model_sales <- Car_sales %>%   
+  group_by(Model) %>%   
+  summarize(Total_Sales_in_thousands = sum(Sales_in_thousands)) 
+```
+
+# Sort the model_sales data frame by Total_Sales in descending order
+
+```{r modelsales,error=TRUE, echo=TRUE}
+model_sales_sorted <- model_sales %>%   
+  arrange(desc(Total_Sales_in_thousands))
+```
+
+# View the top 10 car models with the highest sales
+
+```{r head,error=TRUE, echo=TRUE}
+head(model_sales_sorted, 10) 
+```
+
+# View the bottom 10 car models with the lowest sales
+
+```{r tail,error=TRUE, echo=TRUE}
+tail(model_sales_sorted, 10)
+```
+#Conclusion
+#By using this dataset we have solved a number of problems relating to the sales of the cars.The cars sales program shows the types of cars sold we also made different types of graphs indicating histogram,ggplot and density plot.We also determined the top and worst performing car models. 
+
+
+#Who did what
+#Santosh Kumar MUNNANGI And Amanda Quenum- Solved 3 research questions and Introduction, Description of problem,Interpretation of data
+#Naresh KUMAR and Sethu Madhavan- Solved 4 research questions and Conclusion 
+
+#References
+#https://www.kaggle.com/datasets/hsinha53/car-sales
+
+
+
+
+
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
